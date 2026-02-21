@@ -1,0 +1,351 @@
+/* 
+ * Smart Complaint & Service Tracking System
+ * Dashboard Stylesheet
+ */
+
+/* ===== Welcome Card ===== */
+.welcome-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.welcome-card.admin-welcome {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.3);
+}
+
+.welcome-card h2 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-card .btn-light {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.welcome-card .btn-light:hover {
+    background-color: white;
+    color: #764ba2;
+}
+
+/* ===== Statistics Cards ===== */
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.stat-total .stat-icon {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.stat-pending .stat-icon {
+    background-color: #fef3c7;
+    color: #f59e0b;
+}
+
+.stat-progress .stat-icon {
+    background-color: #dbeafe;
+    color: #3b82f6;
+}
+
+.stat-resolved .stat-icon {
+    background-color: #dcfce7;
+    color: #22c55e;
+}
+
+.stat-urgent .stat-icon {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.stat-high .stat-icon {
+    background-color: #ffedd5;
+    color: #f97316;
+}
+
+.stat-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    color: #1e293b;
+}
+
+.stat-content p {
+    margin-bottom: 0;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* ===== Quick Actions ===== */
+.quick-actions .card {
+    height: 100%;
+}
+
+.quick-actions .card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* ===== Data Table Enhancements ===== */
+.table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table .btn {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* ===== Filter Section ===== */
+.filter-section .form-label {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* ===== Status Colors ===== */
+.status-pending {
+    color: #f59e0b;
+}
+
+.status-in-progress {
+    color: #3b82f6;
+}
+
+.status-resolved {
+    color: #22c55e;
+}
+
+.status-closed {
+    color: #64748b;
+}
+
+/* ===== Priority Colors ===== */
+.priority-low {
+    color: #64748b;
+}
+
+.priority-medium {
+    color: #3b82f6;
+}
+
+.priority-high {
+    color: #f97316;
+}
+
+.priority-urgent {
+    color: #ef4444;
+}
+
+/* ===== Admin Dashboard Specific ===== */
+.admin-dashboard .stat-card {
+    border-left: 4px solid;
+}
+
+.admin-dashboard .stat-total {
+    border-left-color: #2563eb;
+}
+
+.admin-dashboard .stat-pending {
+    border-left-color: #f59e0b;
+}
+
+.admin-dashboard .stat-progress {
+    border-left-color: #3b82f6;
+}
+
+.admin-dashboard .stat-resolved {
+    border-left-color: #22c55e;
+}
+
+.admin-dashboard .stat-urgent {
+    border-left-color: #ef4444;
+}
+
+.admin-dashboard .stat-high {
+    border-left-color: #f97316;
+}
+
+/* ===== Card Headers with Icons ===== */
+.card-header i {
+    margin-right: 8px;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+    padding: 3rem;
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #94a3b8;
+}
+
+/* ===== Rating Display ===== */
+.rating-display {
+    color: #f59e0b;
+}
+
+.rating-display .far {
+    color: #d1d5db;
+}
+
+/* ===== Assignment Badge ===== */
+.assigned-badge {
+    background-color: #e0e7ff;
+    color: #4f46e5;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.unassigned-badge {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* ===== Complaint Card (List View) ===== */
+.complaint-card {
+    border-left: 4px solid;
+    margin-bottom: 1rem;
+}
+
+.complaint-card.priority-urgent {
+    border-left-color: #ef4444;
+}
+
+.complaint-card.priority-high {
+    border-left-color: #f97316;
+}
+
+.complaint-card.priority-medium {
+    border-left-color: #3b82f6;
+}
+
+.complaint-card.priority-low {
+    border-left-color: #64748b;
+}
+
+/* ===== Timeline ===== */
+.complaint-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.complaint-timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e2e8f0;
+}
+
+.timeline-step {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-step:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-step::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: white;
+    border: 3px solid #e2e8f0;
+}
+
+.timeline-step.completed::before {
+    border-color: #22c55e;
+    background-color: #22c55e;
+}
+
+.timeline-step.current::before {
+    border-color: #3b82f6;
+    background-color: white;
+}
+
+.timeline-step h6 {
+    margin-bottom: 0.25rem;
+    color: #1e293b;
+}
+
+.timeline-step small {
+    color: #94a3b8;
+}
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .welcome-card {
+        padding: 1.5rem;
+    }
+    
+    .welcome-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-content h3 {
+        font-size: 1.5rem;
+    }
+}

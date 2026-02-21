@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}My Complaints - Smart Complaint System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-history me-2"></i>My Complaints</h2>
+                <a href="{{ url_for('submit_complaint') }}" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-2"></i>New Complaint
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3>{{ complaints|length }}</h3>
+                    <p class="mb-0">Total</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ complaints|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+                    <p class="mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-primary">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ complaints|selectattr('status', 'equalto', 'in_progress')|list|length }}</h3>
+                    <p class="mb-0">In Progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h3 class="text-success">{{ complaints|selectattr('status', 'equalto', 'resolved')|list|length }}</h3>
+                    <p class="mb-0">Resolved</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaints Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if complaints %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="complaintsTable">
+                    <thead>
+                        <tr>
+                            <th>Tracking ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Rating</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr>
+                            <td><strong>{{ complaint.tracking_id }}</strong></td>
+                            <td>{{ complaint.title[:40] }}{% if complaint.title|length > 40 %}...{% endif %}</td>
+                            <td>{{ complaint.category }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'danger' if complaint.priority == 'urgent' else 'warning' if complaint.priority == 'high' else 'info' if complaint.priority == 'medium' else 'secondary' }}">
+                                    {{ complaint.priority|upper }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'secondary' if complaint.status == 'pending' else 'primary' if complaint.status == 'in_progress' else 'success' }}">
+                                    {{ complaint.status|replace('_', ' ')|upper }}
+                                </span>
+                            </td>
+                            <td>{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if complaint.rating %}
+                                <div>
+                                    {% for i in range(complaint.rating) %}
+                                    <i class="fas fa-star text-warning"></i>
+                                    {% endfor %}
+                                    {% for i in range(5 - complaint.rating) %}
+                                    <i class="far fa-star text-warning"></i>
+                                    {% endfor %}
+                                </div>
+                                {% elif complaint.status == 'resolved' %}
+                                <span class="text-muted">Not rated</span>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('view_complaint', tracking_id=complaint.tracking_id) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h4>No complaints yet</h4>
+                <p class="text-muted">Submit your first complaint to get started</p>
+                <a href="{{ url_for('submit_complaint') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Submit Complaint
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

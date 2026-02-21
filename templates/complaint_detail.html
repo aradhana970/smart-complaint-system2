@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Complaint Details - Smart Complaint System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Complaint Details Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-file-alt me-2"></i>Complaint Details
+                        </h4>
+                        <span class="badge bg-{{ 'secondary' if complaint.status == 'pending' else 'primary' if complaint.status == 'in_progress' else 'success' }}">
+                            {{ complaint.status|replace('_', ' ')|upper }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="text-muted mb-1">Tracking ID</p>
+                            <h5 class="text-primary">{{ complaint.tracking_id }}</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted mb-1">Submitted By</p>
+                            <h5>{{ complaint.user.username }}</h5>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <p class="text-muted mb-1">Title</p>
+                        <h4>{{ complaint.title }}</h4>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <p class="text-muted mb-1">Description</p>
+                        <p>{{ complaint.description }}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <p class="text-muted mb-1">Category</p>
+                            <span class="badge bg-info">{{ complaint.category }}</span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <p class="text-muted mb-1">Priority</p>
+                            <span class="badge bg-{{ 'danger' if complaint.priority == 'urgent' else 'warning' if complaint.priority == 'high' else 'info' if complaint.priority == 'medium' else 'secondary' }}">
+                                {{ complaint.priority|upper }}
+                            </span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <p class="text-muted mb-1">Location</p>
+                            <p>{{ complaint.location or 'Not specified' }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if complaint.attachment %}
+                    <div class="mb-3">
+                        <p class="text-muted mb-1">Attachment</p>
+                        <a href="{{ url_for('static', filename='uploads/' + complaint.attachment) }}" 
+                           class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-paperclip me-1"></i>View Attachment
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <p class="text-muted mb-1">Submitted On</p>
+                        <p>{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                    
+                    {% if complaint.assigned_to_user %}
+                    <div class="mb-3">
+                        <p class="text-muted mb-1">Assigned To</p>
+                        <p>{{ complaint.assigned_to_user.username }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Internal Notes (Admin Only) -->
+            {% if current_user.role == 'admin' and notes %}
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-sticky-note me-2"></i>Internal Notes</h5>
+                </div>
+                <div class="card-body">
+                    {% for note in notes %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ note.author.username }}</strong>
+                            <small class="text-muted">{{ note.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                        <p class="mb-0 mt-2">{{ note.note }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Rating/Feedback (For Resolved Complaints) -->
+            {% if complaint.status == 'resolved' and current_user.role != 'admin' %}
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-star me-2"></i>Rate This Complaint</h5>
+                </div>
+                <div class="card-body">
+                    {% if complaint.rating %}
+                    <div class="text-center">
+                        <h5>Thank you for your feedback!</h5>
+                        <div class="mb-2">
+                            {% for i in range(complaint.rating) %}
+                            <i class="fas fa-star text-warning"></i>
+                            {% endfor %}
+                            {% for i in range(5 - complaint.rating) %}
+                            <i class="far fa-star text-warning"></i>
+                            {% endfor %}
+                        </div>
+                        {% if complaint.feedback %}
+                        <p class="text-muted">"{{ complaint.feedback }}"</p>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('rate_complaint', complaint_id=complaint.id) }}">
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <div class="rating">
+                                <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars">&#9733;</label>
+                                <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">&#9733;</label>
+                                <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">&#9733;</label>
+                                <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">&#9733;</label>
+                                <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">&#9733;</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feedback" class="form-label">Feedback (Optional)</label>
+                            <textarea class="form-control" id="feedback" name="feedback" rows="3" 
+                                      placeholder="Share your experience..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Rating
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Status Timeline -->
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Status Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item {% if complaint.status in ['pending', 'in_progress', 'resolved'] %}active{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Submitted</h6>
+                                <small class="text-muted">{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if complaint.status in ['in_progress', 'resolved'] %}active{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>In Progress</h6>
+                                {% if complaint.updated_at and complaint.status in ['in_progress', 'resolved'] %}
+                                <small class="text-muted">{{ complaint.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if complaint.status == 'resolved' %}active{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Resolved</h6>
+                                {% if complaint.status == 'resolved' %}
+                                <small class="text-muted">{{ complaint.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            {% if current_user.role == 'admin' %}
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Admin Actions</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('update_complaint', complaint_id=complaint.id) }}">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Update Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="pending" {% if complaint.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Update Priority</label>
+                            <select class="form-select" id="priority" name="priority">
+                                <option value="low" {% if complaint.priority == 'low' %}selected{% endif %}>Low</option>
+                                <option value="medium" {% if complaint.priority == 'medium' %}selected{% endif %}>Medium</option>
+                                <option value="high" {% if complaint.priority == 'high' %}selected{% endif %}>High</option>
+                                <option value="urgent" {% if complaint.priority == 'urgent' %}selected{% endif %}>Urgent</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save me-2"></i>Update Complaint
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Add Note -->
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add Note</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('add_note', complaint_id=complaint.id) }}">
+                        <div class="mb-3">
+                            <textarea class="form-control" name="note" rows="3" placeholder="Add internal note..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-info w-100">
+                            <i class="fas fa-plus me-2"></i>Add Note
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Complaint System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2><i class="fas fa-user-circle me-2"></i>Welcome, {{ current_user.username }}!</h2>
+                        <p class="mb-0">Track and manage your complaints easily</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ url_for('submit_complaint') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-plus-circle me-2"></i>New Complaint
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card stat-total">
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.total }}</h3>
+                    <p>Total Complaints</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-pending">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.pending }}</h3>
+                    <p>Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-progress">
+                <div class="stat-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.in_progress }}</h3>
+                    <p>In Progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card stat-resolved">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.resolved }}</h3>
+                    <p>Resolved</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-search me-2"></i>Track Your Complaint</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('track_complaint') }}">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="tracking_id" 
+                                   placeholder="Enter Tracking ID (e.g., CMP-20240101-ABC123)" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search me-1"></i>Track
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Quick Submit</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p class="mb-3">Submit a new complaint quickly</p>
+                    <a href="{{ url_for('submit_complaint') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-plus me-2"></i>Submit Complaint
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Complaints -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Complaints</h5>
+                        <a href="{{ url_for('complaint_history') }}" class="btn btn-sm btn-primary">
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if complaints %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tracking ID</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for complaint in complaints[:5] %}
+                                <tr>
+                                    <td><strong>{{ complaint.tracking_id }}</strong></td>
+                                    <td>{{ complaint.title }}</td>
+                                    <td>{{ complaint.category }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if complaint.priority == 'urgent' else 'warning' if complaint.priority == 'high' else 'info' if complaint.priority == 'medium' else 'secondary' }}">
+                                            {{ complaint.priority|upper }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'secondary' if complaint.status == 'pending' else 'primary' if complaint.status == 'in_progress' else 'success' }}">
+                                            {{ complaint.status|replace('_', ' ')|upper }}
+                                        </span>
+                                    </td>
+                                    <td>{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('view_complaint', tracking_id=complaint.tracking_id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                        <h4>No complaints yet</h4>
+                        <p class="text-muted">Submit your first complaint to get started</p>
+                        <a href="{{ url_for('submit_complaint') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Submit Complaint
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Smart Complaint System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-card admin-welcome">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2><i class="fas fa-shield-alt me-2"></i>Admin Dashboard</h2>
+                        <p class="mb-0">Manage and track all complaints</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ url_for('admin_complaints') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-list me-2"></i>View All Complaints
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="stat-card stat-total">
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.total }}</h3>
+                    <p>Total</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card stat-pending">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.pending }}</h3>
+                    <p>Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card stat-progress">
+                <div class="stat-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.in_progress }}</h3>
+                    <p>In Progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card stat-resolved">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.resolved }}</h3>
+                    <p>Resolved</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card stat-urgent">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.urgent }}</h3>
+                    <p>Urgent</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stat-card stat-high">
+                <div class="stat-icon">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.high }}</h3>
+                    <p>High Priority</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Complaints</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin_complaints', status='pending') }}" class="btn btn-outline-warning">
+                            <i class="fas fa-clock me-2"></i>Pending Complaints
+                        </a>
+                        <a href="{{ url_for('admin_complaints', priority='urgent') }}" class="btn btn-outline-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Urgent Complaints
+                        </a>
+                        <a href="{{ url_for('admin_complaints', status='in_progress') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-spinner me-2"></i>In Progress
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Management</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('manage_categories') }}" class="btn btn-outline-success">
+                            <i class="fas fa-tags me-2"></i>Manage Categories
+                        </a>
+                        <a href="{{ url_for('admin_complaints') }}" class="btn btn-outline-info">
+                            <i class="fas fa-list me-2"></i>All Complaints
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Total Complaints:</strong> {{ stats.total }}</p>
+                    <p class="mb-2"><strong>Resolved:</strong> {{ stats.resolved }} ({{ "%.1f"|format((stats.resolved / stats.total * 100) if stats.total > 0 else 0) }}%)</p>
+                    <p class="mb-0"><strong>Pending:</strong> {{ stats.pending }} ({{ "%.1f"|format((stats.pending / stats.total * 100) if stats.total > 0 else 0) }}%)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Complaints -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Recent Complaints</h5>
+                        <a href="{{ url_for('admin_complaints') }}" class="btn btn-sm btn-primary">
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if complaints %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tracking ID</th>
+                                    <th>User</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Assigned To</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for complaint in recent_complaints %}
+                                <tr>
+                                    <td><strong>{{ complaint.tracking_id }}</strong></td>
+                                    <td>{{ complaint.user.username }}</td>
+                                    <td>{{ complaint.title[:30] }}...</td>
+                                    <td>{{ complaint.category }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if complaint.priority == 'urgent' else 'warning' if complaint.priority == 'high' else 'info' if complaint.priority == 'medium' else 'secondary' }}">
+                                            {{ complaint.priority|upper }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'secondary' if complaint.status == 'pending' else 'primary' if complaint.status == 'in_progress' else 'success' }}">
+                                            {{ complaint.status|replace('_', ' ')|upper }}
+                                        </span>
+                                    </td>
+                                    <td>{{ complaint.assigned_to_user.username if complaint.assigned_to_user else 'Not Assigned' }}</td>
+                                    <td>{{ complaint.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('view_complaint', tracking_id=complaint.tracking_id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                        <h4>No complaints yet</h4>
+                        <p class="text-muted">Complaints will appear here when submitted</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
